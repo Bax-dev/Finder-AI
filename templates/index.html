@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finder AI</title>
+    <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="chat-interface">
+            <h1>Finder AI</h1>
+            <div id="chatbox">
+                <div class="message bot-message">Type lyrics below and optionally enter artist name:</div>
+            </div>
+            <div class="input-bar">
+                <input type="text" class="lyrics" id="artist-input" placeholder="Enter artist name (Optional)">
+                <input type="text" class="lyrics" id="user-input" placeholder="Enter lyrics" required>
+            </div>
+            <button class="send-btn" id="send-btn">Search</button>
+        </div>
+    </div>
+
+    <script>
+        const sendBtn = document.getElementById('send-btn');
+        const chatbox = document.getElementById('chatbox');
+        const artistInput = document.getElementById('artist-input');
+        const userInput = document.getElementById('user-input');
+
+        sendBtn.addEventListener('click', async () => {
+            const artist = artistInput.value;  // Artist is optional
+            const lyrics = userInput.value;
+
+            if (lyrics) {
+                chatbox.innerHTML += `<div class="message user-message">Lyrics: ${lyrics}${artist ? " - Artist: " + artist : ""}</div>`;
+                userInput.value = '';
+                artistInput.value = '';
+
+                // Make the API request
+                const response = await fetch('/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        artist: artist,
+                        lyrics: lyrics
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    chatbox.innerHTML += `<div class="message bot-message">${data.error}</div>`;
+                } else {
+                    let artistImageHtml = data.image ? `<img src="${data.image}" alt="${data.artist}" class="artist-image" />` : '';
+
+                    chatbox.innerHTML += `<div class="message bot-message">
+                        ${artistImageHtml}
+                        <p><strong>Song:</strong> ${data.title}</p>
+                        <p><strong>Artist:</strong> ${data.artist}</p>
+                        <p><strong>Release Date:</strong> ${data.release_date}</p>
+                        <p><strong>Similarity:</strong> ${(data.similarity * 100).toFixed(2)}%</p>
+                        <a href="${data.url}" target="_blank">View Song</a>
+                    </div>`;
+                }
+
+                chatbox.scrollTop = chatbox.scrollHeight;
+            } else {
+                chatbox.innerHTML += `<div class="message bot-message">Please enter lyrics.</div>`;
+            }
+        });
+    </script>
+</body>
+</html>
