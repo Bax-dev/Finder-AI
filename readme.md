@@ -152,4 +152,4 @@ For questions or support, contact:
 
 ## Screenshots
 
-Include screenshots of the web interface to showcase the application.
+![Demo Image](demo.PNG)
