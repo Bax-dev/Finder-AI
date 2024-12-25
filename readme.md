@@ -40,7 +40,7 @@ Lyrics Finder is a web application that allows users to search for songs by ente
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/lyrics-finder.git
+   git clone https://github.com/Bax-dev/Finder-AI.git
    cd lyrics-finder
    ```
 
